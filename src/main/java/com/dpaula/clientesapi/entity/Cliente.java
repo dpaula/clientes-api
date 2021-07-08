@@ -1,6 +1,7 @@
 package com.dpaula.clientesapi.entity;
 
 import com.dpaula.clientesapi.util.Util;
+import com.dpaula.clientesapi.vo.ClienteDTO;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
@@ -10,7 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.YEARS;
 
 /**
  * @author Fernando de Lima on 28/06/21
@@ -43,18 +44,24 @@ public class Cliente {
     @Column(name = "data_inclusao")
     private LocalDateTime dataInclusao;
 
+    @Column(name = "data_alteracao")
+    private LocalDateTime dataAlteracao;
+
     public Long getIdade() {
-        if(dataNascimento == null){
+        if (dataNascimento == null) {
             return null;
         }
 
-        final var now = LocalDate.now(Util.ZONA_ID);
-
-        final var idade = DAYS.between(dataNascimento, now);
-
-        return idade;
+        return YEARS.between(dataNascimento, LocalDate.now(Util.ZONA_ID));
     }
 
-    //    @OneToOne
-//    private Endereco endereco;
+    public static Cliente parse(final ClienteDTO cliente) {
+        return Cliente.builder()
+            .id(cliente.getId())
+            .nome(cliente.getNome())
+            .email(cliente.getEmail())
+            .dataNascimento(cliente.getDataNascimento())
+            .dataAlteracao(cliente.getDataAlteracao())
+            .build();
+    }
 }

@@ -2,7 +2,6 @@ package com.dpaula.clientesapi.handler;
 
 import com.dpaula.clientesapi.error.ConflictException;
 import com.dpaula.clientesapi.error.ObjectNotFoundException;
-import com.dpaula.clientesapi.error.UnprocessableEntityException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -66,14 +65,6 @@ public class RestExceptionHandler {
         final var details = buildErrorDetails(exception, req, INFORMACOES_INCONSISTENTES, HttpStatus.BAD_REQUEST,
             mensagem);
         return new ResponseEntity<>(details, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(UnprocessableEntityException.class)
-    public ResponseEntity<?> handleUnprocessableEntityException(final HttpServletRequest req,
-        final UnprocessableEntityException exception) {
-        final var details = buildErrorDetails(exception, req, exception.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY,
-            exception.getMessage());
-        return new ResponseEntity<>(details, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     @ExceptionHandler(ConflictException.class)

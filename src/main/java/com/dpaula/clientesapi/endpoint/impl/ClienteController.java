@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 /**
@@ -26,9 +27,14 @@ public class ClienteController implements IClienteController {
     private final ClienteService service;
 
     @Override
-    public ResponseEntity<Page<ClienteDTO>> listAll(final Pageable pageable) {
-        final Page<ClienteDTO> clientes = service.findAll(pageable).map(ClienteDTO::parse);
-        return ResponseEntity.ok(clientes);
+    public ResponseEntity<Page<ClienteDTO>> listar(final String nome, final String email, final Integer idade,
+        final LocalDate dataNascimento, final Pageable pageable) {
+
+        final Page<ClienteDTO> clientesDTO = service
+            .findAllByFilters(nome, email, idade, dataNascimento, pageable)
+            .map(ClienteDTO::parse);
+
+        return ResponseEntity.ok(clientesDTO);
     }
 
     @Override

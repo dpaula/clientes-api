@@ -3,6 +3,7 @@ package com.dpaula.clientesapi.service;
 import com.dpaula.clientesapi.entity.Cliente;
 import com.dpaula.clientesapi.error.ConflictException;
 import com.dpaula.clientesapi.error.ObjectNotFoundException;
+import com.dpaula.clientesapi.filtro.ClienteFiltro;
 import com.dpaula.clientesapi.repository.ClienteRepository.ClienteRepository;
 import com.dpaula.clientesapi.util.Util;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 /**
@@ -24,10 +26,17 @@ public class ClienteService {
 
     private final ClienteRepository repository;
 
-    public Page<Cliente> findAll(final Pageable pageable) {
-        log.info("{} Listando todos os Clientes", Util.LOG_PREFIX);
+    public Page<Cliente> findAllByFilters(final String nome, final String email,
+        final Integer idade,
+        final LocalDate dataNascimento, final Pageable pageable) {
 
-        return repository.findAll(pageable);
+        final var filtro = ClienteFiltro.montarFiltro(nome, email, idade, dataNascimento);
+
+        log.info("{} Buscando clientes para o filtro {}", Util.LOG_PREFIX, filtro);
+
+        final var clienteSpec = filtro.toSpec();
+
+        return repository.findAll(clienteSpec, pageable);
     }
 
     public Cliente create(final Cliente cliente) {

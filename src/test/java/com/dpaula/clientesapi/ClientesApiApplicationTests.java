@@ -51,32 +51,6 @@ class ClientesApiApplicationTests {
     private ClienteRepository repository;
 
     @Test
-    void validarListAll() throws Exception {
-
-        final Cliente clienteSalvo = criarClienteSave();
-
-        mockMvc.perform(MockMvcRequestBuilders.get(URI_CLIENTES)
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.pageable.pageNumber", is(0)))
-            .andExpect(jsonPath("$.pageable.pageSize", is(10)))
-            .andExpect(jsonPath("$.pageable.offset", is(0)))
-            .andExpect(jsonPath("$.pageable.paged", is(true)))
-            .andExpect(jsonPath("$.pageable.unpaged", is(false)))
-            .andExpect(jsonPath("$.last", is(true)))
-            .andExpect(jsonPath("$.totalPages", is(1)))
-            .andExpect(jsonPath("$.totalElements", is(1)))
-            .andExpect(jsonPath("$.numberOfElements", is(1)))
-            .andExpect(jsonPath("$.content.[0].id", is(clienteSalvo.getId().toString())))
-            .andExpect(jsonPath("$.content.[0].nome", is(clienteSalvo.getNome())))
-            .andExpect(jsonPath("$.content.[0].email", is(clienteSalvo.getEmail())))
-            .andExpect(jsonPath("$.content.[0].dataNascimento", is(clienteSalvo.getDataNascimento().format(
-                Util.BRAZIL_DATE_FORMAT))))
-            .andExpect(jsonPath("$.content.[0].idade", is((int) (getIdade(clienteSalvo.getDataNascimento())))))
-            .andExpect(jsonPath("$.content.[0].dataInclusao").isNotEmpty());
-    }
-
-    @Test
     void validarPost() throws Exception {
 
         final ClienteDTO clienteDTO = criarClienteDTO();
@@ -384,6 +358,223 @@ class ClientesApiApplicationTests {
                 is("Objeto não encontrado: <id>: <" + id + "> Class: <com.dpaula.clientesapi.entity.Cliente>")));
     }
 
+    @Test
+    void validarListAllTodos() throws Exception {
+
+        final Cliente clienteSalvo = criarClienteSave();
+
+        mockMvc.perform(MockMvcRequestBuilders.get(URI_CLIENTES)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.pageable.pageNumber", is(0)))
+            .andExpect(jsonPath("$.pageable.pageSize", is(20)))
+            .andExpect(jsonPath("$.pageable.offset", is(0)))
+            .andExpect(jsonPath("$.pageable.paged", is(true)))
+            .andExpect(jsonPath("$.pageable.unpaged", is(false)))
+            .andExpect(jsonPath("$.last", is(true)))
+            .andExpect(jsonPath("$.totalPages", is(1)))
+            .andExpect(jsonPath("$.totalElements", is(1)))
+            .andExpect(jsonPath("$.numberOfElements", is(1)))
+            .andExpect(jsonPath("$.content.[0].id", is(clienteSalvo.getId().toString())))
+            .andExpect(jsonPath("$.content.[0].nome", is(clienteSalvo.getNome())))
+            .andExpect(jsonPath("$.content.[0].email", is(clienteSalvo.getEmail())))
+            .andExpect(jsonPath("$.content.[0].dataNascimento", is(clienteSalvo.getDataNascimento().format(
+                Util.BRAZIL_DATE_FORMAT))))
+            .andExpect(jsonPath("$.content.[0].idade", is((int) (getIdade(clienteSalvo.getDataNascimento())))))
+            .andExpect(jsonPath("$.content.[0].dataInclusao").isNotEmpty());
+    }
+
+    @Test
+    void validarListarFiltroPorNome() throws Exception {
+
+        criarClienteSaveFlex(
+            "Fernando de Lima",
+            "fernando.lima@gmail.com",
+            LocalDate.of(1983, 12, 30));
+        final Cliente clientePaula = criarClienteSaveFlex(
+            "Fernando de Paula",
+            "fernando.paula@gmail.com",
+            LocalDate.of(1993, 12, 30));
+
+        mockMvc.perform(MockMvcRequestBuilders.get(URI_CLIENTES + "?nome=" + clientePaula.getNome())
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.pageable.pageNumber", is(0)))
+            .andExpect(jsonPath("$.pageable.pageSize", is(20)))
+            .andExpect(jsonPath("$.pageable.offset", is(0)))
+            .andExpect(jsonPath("$.pageable.paged", is(true)))
+            .andExpect(jsonPath("$.pageable.unpaged", is(false)))
+            .andExpect(jsonPath("$.last", is(true)))
+            .andExpect(jsonPath("$.totalPages", is(1)))
+            .andExpect(jsonPath("$.totalElements", is(1)))
+            .andExpect(jsonPath("$.numberOfElements", is(1)))
+            .andExpect(jsonPath("$.content.[0].id", is(clientePaula.getId().toString())))
+            .andExpect(jsonPath("$.content.[0].nome", is(clientePaula.getNome())))
+            .andExpect(jsonPath("$.content.[0].email", is(clientePaula.getEmail())))
+            .andExpect(jsonPath("$.content.[0].dataNascimento", is(clientePaula.getDataNascimento().format(
+                Util.BRAZIL_DATE_FORMAT))))
+            .andExpect(jsonPath("$.content.[0].idade", is((int) (getIdade(clientePaula.getDataNascimento())))))
+            .andExpect(jsonPath("$.content.[0].dataInclusao").isNotEmpty());
+    }
+
+    @Test
+    void validarListarFiltroPorEmailComUmRetorno() throws Exception {
+
+        final Cliente clienteLima = criarClienteSaveFlex(
+            "Fernando de Lima",
+            "fernando.lima@gmail.com",
+            LocalDate.of(1983, 12, 30));
+        criarClienteSaveFlex(
+            "Fernando de Paula",
+            "fernando.paula@gmail.com",
+            LocalDate.of(1993, 12, 30));
+
+        mockMvc.perform(MockMvcRequestBuilders.get(URI_CLIENTES + "?email=" + clienteLima.getEmail())
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.pageable.pageNumber", is(0)))
+            .andExpect(jsonPath("$.pageable.pageSize", is(20)))
+            .andExpect(jsonPath("$.pageable.offset", is(0)))
+            .andExpect(jsonPath("$.pageable.paged", is(true)))
+            .andExpect(jsonPath("$.pageable.unpaged", is(false)))
+            .andExpect(jsonPath("$.last", is(true)))
+            .andExpect(jsonPath("$.totalPages", is(1)))
+            .andExpect(jsonPath("$.totalElements", is(1)))
+            .andExpect(jsonPath("$.numberOfElements", is(1)))
+            .andExpect(jsonPath("$.content.[0].id", is(clienteLima.getId().toString())))
+            .andExpect(jsonPath("$.content.[0].nome", is(clienteLima.getNome())))
+            .andExpect(jsonPath("$.content.[0].email", is(clienteLima.getEmail())))
+            .andExpect(jsonPath("$.content.[0].dataNascimento", is(clienteLima.getDataNascimento().format(
+                Util.BRAZIL_DATE_FORMAT))))
+            .andExpect(jsonPath("$.content.[0].idade", is((int) (getIdade(clienteLima.getDataNascimento())))))
+            .andExpect(jsonPath("$.content.[0].dataInclusao").isNotEmpty());
+    }
+
+    @Test
+    void validarListarFiltroPorIdadeComDoisRetornos() throws Exception {
+
+        criarClienteSaveFlex(
+            "Fernando de Lima",
+            "fernando.lima@gmail.com",
+            LocalDate.of(1983, 12, 30));
+        final Cliente clientePaula = criarClienteSaveFlex(
+            "Fernando de Paula",
+            "fernando.paula@gmail.com",
+            LocalDate.of(1993, 12, 30));
+        final Cliente clienteSilva = criarClienteSaveFlex(
+            "Alex da Silva",
+            "alex.silva@gmail.com",
+            LocalDate.of(1993, 12, 30));
+
+        mockMvc.perform(MockMvcRequestBuilders.get(URI_CLIENTES + "?idade=27")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.pageable.pageNumber", is(0)))
+            .andExpect(jsonPath("$.pageable.pageSize", is(20)))
+            .andExpect(jsonPath("$.pageable.offset", is(0)))
+            .andExpect(jsonPath("$.pageable.paged", is(true)))
+            .andExpect(jsonPath("$.pageable.unpaged", is(false)))
+            .andExpect(jsonPath("$.last", is(true)))
+            .andExpect(jsonPath("$.totalPages", is(1)))
+            .andExpect(jsonPath("$.totalElements", is(2)))
+            .andExpect(jsonPath("$.numberOfElements", is(2)))
+            .andExpect(jsonPath("$.content.[0].id", is(clienteSilva.getId().toString())))
+            .andExpect(jsonPath("$.content.[0].nome", is(clienteSilva.getNome())))
+            .andExpect(jsonPath("$.content.[0].email", is(clienteSilva.getEmail())))
+            .andExpect(jsonPath("$.content.[0].dataNascimento", is(clienteSilva.getDataNascimento().format(
+                Util.BRAZIL_DATE_FORMAT))))
+            .andExpect(jsonPath("$.content.[0].idade", is((int) (getIdade(clienteSilva.getDataNascimento())))))
+            .andExpect(jsonPath("$.content.[0].dataInclusao").isNotEmpty())
+            .andExpect(jsonPath("$.content.[1].id", is(clientePaula.getId().toString())))
+            .andExpect(jsonPath("$.content.[1].nome", is(clientePaula.getNome())))
+            .andExpect(jsonPath("$.content.[1].email", is(clientePaula.getEmail())))
+            .andExpect(jsonPath("$.content.[1].dataNascimento", is(clientePaula.getDataNascimento().format(
+                Util.BRAZIL_DATE_FORMAT))))
+            .andExpect(jsonPath("$.content.[1].idade", is((int) (getIdade(clientePaula.getDataNascimento())))))
+            .andExpect(jsonPath("$.content.[1].dataInclusao").isNotEmpty());
+    }
+
+    @Test
+    void validarListarFiltroPorDataNascimentoComDoisRetornos() throws Exception {
+
+        criarClienteSaveFlex(
+            "Fernando de Lima",
+            "fernando.lima@gmail.com",
+            LocalDate.of(1983, 12, 30));
+        final Cliente clientePaula = criarClienteSaveFlex(
+            "Fernando de Paula",
+            "fernando.paula@gmail.com",
+            LocalDate.of(1993, 12, 30));
+        final Cliente clienteSilva = criarClienteSaveFlex(
+            "Alex da Silva",
+            "alex.silva@gmail.com",
+            LocalDate.of(1993, 12, 30));
+
+        mockMvc.perform(MockMvcRequestBuilders.get(URI_CLIENTES + "?data-nascimento=30/12/1993")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.pageable.pageNumber", is(0)))
+            .andExpect(jsonPath("$.pageable.pageSize", is(20)))
+            .andExpect(jsonPath("$.pageable.offset", is(0)))
+            .andExpect(jsonPath("$.pageable.paged", is(true)))
+            .andExpect(jsonPath("$.pageable.unpaged", is(false)))
+            .andExpect(jsonPath("$.last", is(true)))
+            .andExpect(jsonPath("$.totalPages", is(1)))
+            .andExpect(jsonPath("$.totalElements", is(2)))
+            .andExpect(jsonPath("$.numberOfElements", is(2)))
+            .andExpect(jsonPath("$.content.[0].id", is(clienteSilva.getId().toString())))
+            .andExpect(jsonPath("$.content.[0].nome", is(clienteSilva.getNome())))
+            .andExpect(jsonPath("$.content.[0].email", is(clienteSilva.getEmail())))
+            .andExpect(jsonPath("$.content.[0].dataNascimento", is(clienteSilva.getDataNascimento().format(
+                Util.BRAZIL_DATE_FORMAT))))
+            .andExpect(jsonPath("$.content.[0].idade", is((int) (getIdade(clienteSilva.getDataNascimento())))))
+            .andExpect(jsonPath("$.content.[0].dataInclusao").isNotEmpty())
+            .andExpect(jsonPath("$.content.[1].id", is(clientePaula.getId().toString())))
+            .andExpect(jsonPath("$.content.[1].nome", is(clientePaula.getNome())))
+            .andExpect(jsonPath("$.content.[1].email", is(clientePaula.getEmail())))
+            .andExpect(jsonPath("$.content.[1].dataNascimento", is(clientePaula.getDataNascimento().format(
+                Util.BRAZIL_DATE_FORMAT))))
+            .andExpect(jsonPath("$.content.[1].idade", is((int) (getIdade(clientePaula.getDataNascimento())))))
+            .andExpect(jsonPath("$.content.[1].dataInclusao").isNotEmpty());
+    }
+
+    @Test
+    void validarListarFiltroPorPrimeiroNomeEDataNascimentoComUmRetorno() throws Exception {
+
+        criarClienteSaveFlex(
+            "Fernando de Lima",
+            "fernando.lima@gmail.com",
+            LocalDate.of(1983, 12, 30));
+        final Cliente clientePaula = criarClienteSaveFlex(
+            "Fernando de Paula",
+            "fernando.paula@gmail.com",
+            LocalDate.of(1993, 12, 30));
+        criarClienteSaveFlex(
+            "Alex da Silva",
+            "alex.silva@gmail.com",
+            LocalDate.of(1993, 12, 30));
+
+        mockMvc.perform(MockMvcRequestBuilders.get(URI_CLIENTES + "?nome=fernando&data-nascimento=30/12/1993")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.pageable.pageNumber", is(0)))
+            .andExpect(jsonPath("$.pageable.pageSize", is(20)))
+            .andExpect(jsonPath("$.pageable.offset", is(0)))
+            .andExpect(jsonPath("$.pageable.paged", is(true)))
+            .andExpect(jsonPath("$.pageable.unpaged", is(false)))
+            .andExpect(jsonPath("$.last", is(true)))
+            .andExpect(jsonPath("$.totalPages", is(1)))
+            .andExpect(jsonPath("$.totalElements", is(1)))
+            .andExpect(jsonPath("$.numberOfElements", is(1)))
+            .andExpect(jsonPath("$.content.[0].id", is(clientePaula.getId().toString())))
+            .andExpect(jsonPath("$.content.[0].nome", is(clientePaula.getNome())))
+            .andExpect(jsonPath("$.content.[0].email", is(clientePaula.getEmail())))
+            .andExpect(jsonPath("$.content.[0].dataNascimento", is(clientePaula.getDataNascimento().format(
+                Util.BRAZIL_DATE_FORMAT))))
+            .andExpect(jsonPath("$.content.[0].idade", is((int) (getIdade(clientePaula.getDataNascimento())))))
+            .andExpect(jsonPath("$.content.[0].dataInclusao").isNotEmpty());
+    }
+
     private long getIdade(final LocalDate dataNascimento) {
         return YEARS.between(dataNascimento, LocalDate.now());
     }
@@ -394,6 +585,18 @@ class ClientesApiApplicationTests {
             .nome("Fernando de Lima")
             .email("fernando.dpaula@gmail.com")
             .dataNascimento(LocalDate.of(1983, 12, 30))
+            .dataInclusao(LocalDateTime.now())
+            .build();
+
+        return repository.save(clienteBase);
+    }
+
+    private Cliente criarClienteSaveFlex(final String nome, final String email, final LocalDate dataNascimento) {
+
+        final Cliente clienteBase = Cliente.builder()
+            .nome(nome)
+            .email(email)
+            .dataNascimento(dataNascimento)
             .dataInclusao(LocalDateTime.now())
             .build();
 

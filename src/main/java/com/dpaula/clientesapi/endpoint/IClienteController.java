@@ -1,5 +1,6 @@
 package com.dpaula.clientesapi.endpoint;
 
+import com.dpaula.clientesapi.util.Util;
 import com.dpaula.clientesapi.vo.ClienteDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -8,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -15,6 +17,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.util.UUID;
 
 /**
@@ -26,10 +29,14 @@ import java.util.UUID;
 @Tag(name = "Clientes", description = "Serviços para gerenciamento de Clientes")
 public interface IClienteController {
 
-    @Operation(summary = "Listar Clientes", description = "Consulta todos os clientes, ordenado por data de cadastro", tags = "Clientes")
-    @GetMapping
-    ResponseEntity<Page<ClienteDTO>> listAll(
-        @PageableDefault(sort = "dataInclusao", direction = Sort.Direction.DESC) @Parameter(hidden = true) Pageable pageable);
+    @Operation(summary = "Buscar Cliente(s)", description = "Get para buscar um ou vários Clientes")
+    @GetMapping()
+    ResponseEntity<Page<ClienteDTO>> listar(
+        @RequestParam(value = "nome", required = false) String nome,
+        @RequestParam(value = "email", required = false) String email,
+        @RequestParam(value = "idade", required = false) Integer idade,
+        @RequestParam(value = "data-nascimento", required = false) @DateTimeFormat(pattern = Util.DD_MM_YYYY) LocalDate dataNascimento,
+        @PageableDefault(sort = "dataInclusao", direction = Sort.Direction.DESC, size = 20) @Parameter(hidden = true) Pageable pageable);
 
     @Operation(summary = "Incluir Cliente", description = "Post para incluir um novo cliente")
     @PostMapping

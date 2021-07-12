@@ -153,6 +153,30 @@ class ClientesApiApplicationTests {
     }
 
     @Test
+    void validarPostClienteEmailInvalido() throws Exception {
+
+        final ClienteDTO clienteDTO = ClienteDTO.builder()
+            .nome("Fernando de Lima")
+            .email("fernando.dpaula")
+            .dataNascimento(LocalDate.of(1983, 12, 30))
+            .build();
+
+        mockMvc.perform(MockMvcRequestBuilders.post(URI_CLIENTES)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+            .content(JsonUtilsTest.toJson(clienteDTO)))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message", is("Informações inconsistentes!")))
+            .andExpect(jsonPath("$.status", is(HttpStatus.BAD_REQUEST.value())))
+            .andExpect(jsonPath("$.url", is(URI_CLIENTES)))
+            .andExpect(
+                jsonPath("$.detailDeveloper.exceptionClass",
+                    is("org.springframework.web.bind.MethodArgumentNotValidException")))
+            .andExpect(jsonPath("$.detailDeveloper.error",
+                is("email Deve ser endereço de email válido!")));
+    }
+
+    @Test
     void validarPostClienteDataNascimentoNull() throws Exception {
 
         final ClienteDTO clienteDTO = ClienteDTO.builder()

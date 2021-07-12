@@ -1,0 +1,71 @@
+server:
+  port: 2550
+  servlet:
+    context-path: /
+  undertow:
+    accesslog:
+      prefix: "[CLIENTES-API]"
+
+spring:
+  main:
+    banner-mode: 'off'
+  output:
+    ansi:
+      enabled: 'always'
+  application:
+    name: 'clientes-api'
+  jpa:
+    database-platform: org.hibernate.dialect.SQLServerDialect
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        database: sql-server
+        dialect: org.hibernate.dialect.SQLServer2008Dialect
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+
+  jmx:
+    enabled: false
+  datasource:
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    url: jdbc:sqlserver://db;databaseName=master
+    username: sa
+    password: skhhse34l5kj
+
+logging:
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{1}: %msg%n'
+  level:
+    root: INFO
+    com.portoitapoa: DEBUG
+
+#ACTUATOR
+management:
+  endpoint:
+    health:
+      show-details: always
+    metrics:
+      enabled: false
+      prometheus:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+info:
+  app:
+    name: '@project.name@'
+    description: '@project.description@'
+    version: '@project.version@'
+    encoding: '@project.build.sourceEncoding@'
+    java:
+      version: '@java.version@'

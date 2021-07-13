@@ -11,7 +11,7 @@
 
     <groupId>com.dpaula</groupId>
     <artifactId>clientes-api</artifactId>
-    <version>0.0.5</version>
+    <version>1.0.0</version>
     <name>clientes-api</name>
     <description>API para cadastros de Clientes</description>
 

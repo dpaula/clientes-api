@@ -5,7 +5,7 @@ services:
     build:
       dockerfile: ./dockerfile
       context: .
-    image: fplima/clientes-api:0.0.5
+    image: fplima/clientes-api:1.0.0
     environment:
       - PROFILE=--spring.profiles.active=staging
       - PORT=2550

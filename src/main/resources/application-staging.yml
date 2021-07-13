@@ -44,7 +44,13 @@ logging:
     console: '%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{1}: %msg%n'
   level:
     root: INFO
-    com.portoitapoa: DEBUG
+    com.dpaula: DEBUG
+
+app:
+  config:
+    cliente:
+      idade-minima: 16
+      idade-maxima: 140
 
 #ACTUATOR
 management:

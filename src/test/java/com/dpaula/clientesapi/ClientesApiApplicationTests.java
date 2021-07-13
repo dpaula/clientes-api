@@ -1,5 +1,6 @@
 package com.dpaula.clientesapi;
 
+import com.dpaula.clientesapi.conf.ConfiguracoesGerais;
 import com.dpaula.clientesapi.dto.ClienteDTO;
 import com.dpaula.clientesapi.entity.Cliente;
 import com.dpaula.clientesapi.repository.ClienteRepository.ClienteRepository;
@@ -50,6 +51,9 @@ class ClientesApiApplicationTests {
     @Autowired
     private ClienteRepository repository;
 
+    @Autowired
+    private ConfiguracoesGerais configuracoesGerais;
+
     @Test
     void validarPost() throws Exception {
 
@@ -83,7 +87,6 @@ class ClientesApiApplicationTests {
         assertThat(cliente.getDataNascimento()).isEqualTo(clienteDTO.getDataNascimento());
         assertThat(cliente.getDataInclusao()).isNotNull();
         assertThat(cliente.getIdade()).isEqualTo(getIdade(clienteDTO.getDataNascimento()));
-
     }
 
     @Test
@@ -200,6 +203,56 @@ class ClientesApiApplicationTests {
     }
 
     @Test
+    void validarPostClienteDataNascimentoComDesacordoPoliticaIdadeMinima() throws Exception {
+
+        final ClienteDTO clienteDTO = ClienteDTO.builder()
+            .nome("Fernando de Lima")
+            .email("fernando.dpaula@gmail.com")
+            .dataNascimento(LocalDate.of(2005, 12, 30))
+            .build();
+
+        mockMvc.perform(MockMvcRequestBuilders.post(URI_CLIENTES)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+            .content(JsonUtilsTest.toJson(clienteDTO)))
+            .andExpect(status().isUnprocessableEntity())
+            .andExpect(jsonPath("$.message",
+                is("Idade ultrapassa política de idade mínima: " + configuracoesGerais.getCliente().getIdadeMinima())))
+            .andExpect(jsonPath("$.status", is(HttpStatus.UNPROCESSABLE_ENTITY.value())))
+            .andExpect(jsonPath("$.url", is(URI_CLIENTES)))
+            .andExpect(
+                jsonPath("$.detailDeveloper.exceptionClass",
+                    is("com.dpaula.clientesapi.error.UnprocessableEntityException")))
+            .andExpect(jsonPath("$.detailDeveloper.error",
+                is("Idade ultrapassa política de idade mínima: " + configuracoesGerais.getCliente().getIdadeMinima())));
+    }
+
+    @Test
+    void validarPostClienteDataNascimentoComDesacordoPoliticaIdadeMaxima() throws Exception {
+
+        final ClienteDTO clienteDTO = ClienteDTO.builder()
+            .nome("Fernando de Lima")
+            .email("fernando.dpaula@gmail.com")
+            .dataNascimento(LocalDate.of(1878, 12, 30))
+            .build();
+
+        mockMvc.perform(MockMvcRequestBuilders.post(URI_CLIENTES)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+            .content(JsonUtilsTest.toJson(clienteDTO)))
+            .andExpect(status().isUnprocessableEntity())
+            .andExpect(jsonPath("$.message",
+                is("Idade ultrapassa política de idade máxima: " + configuracoesGerais.getCliente().getIdadeMaxima())))
+            .andExpect(jsonPath("$.status", is(HttpStatus.UNPROCESSABLE_ENTITY.value())))
+            .andExpect(jsonPath("$.url", is(URI_CLIENTES)))
+            .andExpect(
+                jsonPath("$.detailDeveloper.exceptionClass",
+                    is("com.dpaula.clientesapi.error.UnprocessableEntityException")))
+            .andExpect(jsonPath("$.detailDeveloper.error",
+                is("Idade ultrapassa política de idade máxima: " + configuracoesGerais.getCliente().getIdadeMaxima())));
+    }
+
+    @Test
     void validarPut() throws Exception {
 
         final String nome = "Fernando de Lima";
@@ -313,6 +366,116 @@ class ClientesApiApplicationTests {
                 jsonPath("$.detailDeveloper.exceptionClass", is("com.dpaula.clientesapi.error.ConflictException")))
             .andExpect(jsonPath("$.detailDeveloper.error",
                 is("Já existe Cliente cadastrado para email: " + emailJaCadastrado)));
+    }
+
+    @Test
+    void validarPutClienteDataNascimentoComDesacordoPoliticaIdadeMinima() throws Exception {
+
+        final String nome = "Fernando de Lima";
+        final String email = "fernando.dpaula@gmail.com";
+        final LocalDate dataNascimento = LocalDate.of(1983, 12, 30);
+
+        final Cliente clienteSave = repository.save(Cliente.builder()
+            .nome(nome)
+            .email(email)
+            .dataNascimento(dataNascimento)
+            .dataInclusao(LocalDateTime.now())
+            .build());
+
+        final ClienteDTO clienteDTO = ClienteDTO.builder()
+            .id(clienteSave.getId())
+            .nome("Fernando de Paula de Lima")
+            .email("fernando.dpaula@hotmail.com")
+            .dataNascimento(LocalDate.of(2005, 12, 30))
+            .build();
+
+        mockMvc.perform(MockMvcRequestBuilders.put(URI_CLIENTES)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+            .content(JsonUtilsTest.toJson(clienteDTO)))
+            .andExpect(status().isUnprocessableEntity())
+            .andExpect(jsonPath("$.message",
+                is("Idade ultrapassa política de idade mínima: " + configuracoesGerais.getCliente().getIdadeMinima())))
+            .andExpect(jsonPath("$.status", is(HttpStatus.UNPROCESSABLE_ENTITY.value())))
+            .andExpect(jsonPath("$.url", is(URI_CLIENTES)))
+            .andExpect(
+                jsonPath("$.detailDeveloper.exceptionClass",
+                    is("com.dpaula.clientesapi.error.UnprocessableEntityException")))
+            .andExpect(jsonPath("$.detailDeveloper.error",
+                is("Idade ultrapassa política de idade mínima: " + configuracoesGerais.getCliente().getIdadeMinima())));
+    }
+
+    @Test
+    void validarPutClienteDataNascimentoComDesacordoPoliticaIdadeMaxima() throws Exception {
+
+        final String nome = "Fernando de Lima";
+        final String email = "fernando.dpaula@gmail.com";
+        final LocalDate dataNascimento = LocalDate.of(1983, 12, 30);
+
+        final Cliente clienteSave = repository.save(Cliente.builder()
+            .nome(nome)
+            .email(email)
+            .dataNascimento(dataNascimento)
+            .dataInclusao(LocalDateTime.now())
+            .build());
+
+        final ClienteDTO clienteDTO = ClienteDTO.builder()
+            .id(clienteSave.getId())
+            .nome("Fernando de Paula de Lima")
+            .email("fernando.dpaula@hotmail.com")
+            .dataNascimento(LocalDate.of(1878, 12, 30))
+            .build();
+
+        mockMvc.perform(MockMvcRequestBuilders.put(URI_CLIENTES)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+            .content(JsonUtilsTest.toJson(clienteDTO)))
+            .andExpect(status().isUnprocessableEntity())
+            .andExpect(jsonPath("$.message",
+                is("Idade ultrapassa política de idade máxima: " + configuracoesGerais.getCliente().getIdadeMaxima())))
+            .andExpect(jsonPath("$.status", is(HttpStatus.UNPROCESSABLE_ENTITY.value())))
+            .andExpect(jsonPath("$.url", is(URI_CLIENTES)))
+            .andExpect(
+                jsonPath("$.detailDeveloper.exceptionClass",
+                    is("com.dpaula.clientesapi.error.UnprocessableEntityException")))
+            .andExpect(jsonPath("$.detailDeveloper.error",
+                is("Idade ultrapassa política de idade máxima: " + configuracoesGerais.getCliente().getIdadeMaxima())));
+    }
+
+    @Test
+    void validarPutIdNull() throws Exception {
+
+        final String nome = "Fernando de Lima";
+        final String email = "fernando.dpaula@gmail.com";
+        final LocalDate dataNascimento = LocalDate.of(1983, 12, 30);
+
+        repository.save(Cliente.builder()
+            .nome(nome)
+            .email(email)
+            .dataNascimento(dataNascimento)
+            .dataInclusao(LocalDateTime.now())
+            .build());
+
+        final ClienteDTO clienteDTO = ClienteDTO.builder()
+            .nome("Fernando de Paula de Lima")
+            .email("fernando.dpaula@hotmail.com")
+            .dataNascimento(LocalDate.of(1993, 12, 30))
+            .build();
+
+        mockMvc.perform(MockMvcRequestBuilders.put(URI_CLIENTES)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+            .content(JsonUtilsTest.toJson(clienteDTO)))
+            .andExpect(status().isUnprocessableEntity())
+            .andExpect(jsonPath("$.message",
+                is("Id deve ser informado para alterar Cliente!")))
+            .andExpect(jsonPath("$.status", is(HttpStatus.UNPROCESSABLE_ENTITY.value())))
+            .andExpect(jsonPath("$.url", is(URI_CLIENTES)))
+            .andExpect(
+                jsonPath("$.detailDeveloper.exceptionClass",
+                    is("com.dpaula.clientesapi.error.UnprocessableEntityException")))
+            .andExpect(jsonPath("$.detailDeveloper.error",
+                is("Id deve ser informado para alterar Cliente!")));
     }
 
     @Test

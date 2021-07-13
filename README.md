@@ -73,7 +73,8 @@ Existem dois pré requisitos para execução da API:
 A principal documentação da API foi exportada via Swagger (link abaixo), e é a maneira mais simples (e eficiente) para
 efetuar testes
 
-A segunda opção para fácil utilização da API, é através do Postman, onde pode ser importado por este arquivo
+A segunda opção para fácil utilização da API, é através do Postman, onde pode ser importado por
+este [arquivo](https://github.com/dpaula/clientes-api/blob/4f44c098c71cbc8e528942f842c5bfd1204fcd72/CLIENTES-API.postman_collection.json)
 
 ## Acessando API
 

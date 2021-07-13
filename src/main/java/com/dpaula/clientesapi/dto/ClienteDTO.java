@@ -1,19 +1,15 @@
-package com.dpaula.clientesapi.vo;
+package com.dpaula.clientesapi.dto;
 
 import com.dpaula.clientesapi.entity.Cliente;
-import com.dpaula.clientesapi.util.Util;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
+import org.springframework.data.redis.core.RedisHash;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -30,8 +26,10 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_WRITE;
 @Builder
 @ToString
 @Schema(name = "Cliente")
-public class ClienteDTO {
+@RedisHash("clientes")
+public class ClienteDTO implements Serializable {
 
+    private static final long serialVersionUID = 8926274467059821529L;
     @Schema(accessMode = READ_WRITE, example = "6a0f69fc-63c3-48e9-9f0a-efde73604d69", description = "Id do Cliente")
     private UUID id;
 
@@ -46,10 +44,7 @@ public class ClienteDTO {
     @Email(message = "Deve ser endereço de email válido!")
     private String email;
 
-    @Schema(accessMode = READ_WRITE, example = "30/12/1995", description = "Idade do Cliente")
-    @JsonFormat(pattern = Util.DD_MM_YYYY)
-    @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonSerialize(using = LocalDateSerializer.class)
+    @Schema(accessMode = READ_WRITE, example = "1995-12-30", description = "Idade do Cliente", pattern = "teste")
     @NotNull
     private LocalDate dataNascimento;
 

@@ -19,9 +19,7 @@ public class Util {
 	public static String LOG_PREFIX;
 
 	public static final ZoneId ZONA_ID = ZoneId.of("America/Sao_Paulo");
-
-	public static final String DD_MM_YYYY = "dd/MM/yyyy";
-	public static final DateTimeFormatter BRAZIL_DATE_FORMAT = DateTimeFormatter.ofPattern(DD_MM_YYYY);
+	public static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	@Value("${server.undertow.accesslog.prefix}")
 	public void setLogPrefix(final String logPrefix) {

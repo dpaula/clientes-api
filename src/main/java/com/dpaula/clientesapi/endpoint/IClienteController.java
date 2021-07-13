@@ -1,7 +1,6 @@
 package com.dpaula.clientesapi.endpoint;
 
-import com.dpaula.clientesapi.util.Util;
-import com.dpaula.clientesapi.vo.ClienteDTO;
+import com.dpaula.clientesapi.dto.ClienteDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,15 +34,17 @@ public interface IClienteController {
         @RequestParam(value = "nome", required = false) String nome,
         @RequestParam(value = "email", required = false) String email,
         @RequestParam(value = "idade", required = false) Integer idade,
-        @RequestParam(value = "data-nascimento", required = false) @DateTimeFormat(pattern = Util.DD_MM_YYYY) LocalDate dataNascimento,
+        @RequestParam(value = "data-nascimento", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataNascimento,
         @PageableDefault(sort = "dataInclusao", direction = Sort.Direction.DESC, size = 20) @Parameter(hidden = true) Pageable pageable);
 
     @Operation(summary = "Incluir Cliente", description = "Post para incluir um novo cliente")
+    @Transactional
     @PostMapping
     ResponseEntity<ClienteDTO> post(@NotNull @Valid @RequestBody final ClienteDTO clienteInput,
         UriComponentsBuilder builder);
 
     @Operation(summary = "Alterar Cliente", description = "Put para alterar um cliente")
+    @Transactional
     @PutMapping
     ResponseEntity<ClienteDTO> put(@NotNull @Valid @RequestBody final ClienteDTO clienteInput);
 

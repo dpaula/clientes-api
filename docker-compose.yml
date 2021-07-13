@@ -1,24 +1,11 @@
 version: '3'
 services:
 
-  db:
-    image: mcr.microsoft.com/mssql/server:2017-latest
-    ports:
-      - 1433:1433
-    volumes:
-      - db_data:/var/opt/mssql/data
-    environment:
-      ACCEPT_EULA: Y
-      SA_PASSWORD: skhhse34l5kj
-    restart: always
-    networks:
-      - infra-cli-network
-
   clientes-api:
     build:
       dockerfile: ./dockerfile
       context: .
-    image: fplima/clientes-api:0.0.3
+    image: fplima/clientes-api:0.0.5
     environment:
       - PROFILE=--spring.profiles.active=staging
       - PORT=2550
@@ -29,6 +16,29 @@ services:
       - infra-cli-network
     depends_on:
       - db
+      - redis
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    ports:
+      - 1433:1433
+    volumes:
+      - db_data:/var/opt/mssql/data
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: dEv8_adlkj*
+    restart: always
+    networks:
+      - infra-cli-network
+
+  redis:
+    image: 'bitnami/redis:latest'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - 6379:6379
+    networks:
+      - infra-cli-network
 
 networks:
   infra-cli-network:

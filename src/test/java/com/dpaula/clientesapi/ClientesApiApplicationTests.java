@@ -1,10 +1,10 @@
 package com.dpaula.clientesapi;
 
+import com.dpaula.clientesapi.dto.ClienteDTO;
 import com.dpaula.clientesapi.entity.Cliente;
 import com.dpaula.clientesapi.repository.ClienteRepository.ClienteRepository;
 import com.dpaula.clientesapi.util.JsonUtilsTest;
 import com.dpaula.clientesapi.util.Util;
-import com.dpaula.clientesapi.vo.ClienteDTO;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -64,7 +64,7 @@ class ClientesApiApplicationTests {
             .andExpect(jsonPath("$.nome", is(clienteDTO.getNome())))
             .andExpect(jsonPath("$.email", is(clienteDTO.getEmail())))
             .andExpect(jsonPath("$.dataNascimento", is(clienteDTO.getDataNascimento().format(
-                Util.BRAZIL_DATE_FORMAT))))
+                Util.DATE_FORMAT))))
             .andExpect(jsonPath("$.dataInclusao").isNotEmpty())
             .andExpect(jsonPath("$.idade", is((int) (getIdade(clienteDTO.getDataNascimento())))))
             .andReturn();
@@ -229,7 +229,7 @@ class ClientesApiApplicationTests {
             .andExpect(jsonPath("$.nome", is(clienteDTO.getNome())))
             .andExpect(jsonPath("$.email", is(clienteDTO.getEmail())))
             .andExpect(jsonPath("$.dataNascimento", is(clienteDTO.getDataNascimento().format(
-                Util.BRAZIL_DATE_FORMAT))))
+                Util.DATE_FORMAT))))
             .andExpect(jsonPath("$.dataInclusao").isNotEmpty())
             .andExpect(jsonPath("$.dataAlteracao").isNotEmpty())
             .andExpect(jsonPath("$.idade", is((int) (getIdade(clienteDTO.getDataNascimento())))));
@@ -327,7 +327,7 @@ class ClientesApiApplicationTests {
             .andExpect(jsonPath("$.nome", is(clienteSalvo.getNome())))
             .andExpect(jsonPath("$.email", is(clienteSalvo.getEmail())))
             .andExpect(jsonPath("$.dataNascimento", is(clienteSalvo.getDataNascimento().format(
-                Util.BRAZIL_DATE_FORMAT))))
+                Util.DATE_FORMAT))))
             .andExpect(jsonPath("$.dataInclusao").isNotEmpty())
             .andExpect(jsonPath("$.dataAlteracao").isEmpty())
             .andExpect(jsonPath("$.idade", is((int) (getIdade(clienteSalvo.getDataNascimento())))));
@@ -403,7 +403,7 @@ class ClientesApiApplicationTests {
             .andExpect(jsonPath("$.content.[0].nome", is(clienteSalvo.getNome())))
             .andExpect(jsonPath("$.content.[0].email", is(clienteSalvo.getEmail())))
             .andExpect(jsonPath("$.content.[0].dataNascimento", is(clienteSalvo.getDataNascimento().format(
-                Util.BRAZIL_DATE_FORMAT))))
+                Util.DATE_FORMAT))))
             .andExpect(jsonPath("$.content.[0].idade", is((int) (getIdade(clienteSalvo.getDataNascimento())))))
             .andExpect(jsonPath("$.content.[0].dataInclusao").isNotEmpty());
     }
@@ -436,7 +436,7 @@ class ClientesApiApplicationTests {
             .andExpect(jsonPath("$.content.[0].nome", is(clientePaula.getNome())))
             .andExpect(jsonPath("$.content.[0].email", is(clientePaula.getEmail())))
             .andExpect(jsonPath("$.content.[0].dataNascimento", is(clientePaula.getDataNascimento().format(
-                Util.BRAZIL_DATE_FORMAT))))
+                Util.DATE_FORMAT))))
             .andExpect(jsonPath("$.content.[0].idade", is((int) (getIdade(clientePaula.getDataNascimento())))))
             .andExpect(jsonPath("$.content.[0].dataInclusao").isNotEmpty());
     }
@@ -469,7 +469,7 @@ class ClientesApiApplicationTests {
             .andExpect(jsonPath("$.content.[0].nome", is(clienteLima.getNome())))
             .andExpect(jsonPath("$.content.[0].email", is(clienteLima.getEmail())))
             .andExpect(jsonPath("$.content.[0].dataNascimento", is(clienteLima.getDataNascimento().format(
-                Util.BRAZIL_DATE_FORMAT))))
+                Util.DATE_FORMAT))))
             .andExpect(jsonPath("$.content.[0].idade", is((int) (getIdade(clienteLima.getDataNascimento())))))
             .andExpect(jsonPath("$.content.[0].dataInclusao").isNotEmpty());
     }
@@ -506,14 +506,14 @@ class ClientesApiApplicationTests {
             .andExpect(jsonPath("$.content.[0].nome", is(clienteSilva.getNome())))
             .andExpect(jsonPath("$.content.[0].email", is(clienteSilva.getEmail())))
             .andExpect(jsonPath("$.content.[0].dataNascimento", is(clienteSilva.getDataNascimento().format(
-                Util.BRAZIL_DATE_FORMAT))))
+                Util.DATE_FORMAT))))
             .andExpect(jsonPath("$.content.[0].idade", is((int) (getIdade(clienteSilva.getDataNascimento())))))
             .andExpect(jsonPath("$.content.[0].dataInclusao").isNotEmpty())
             .andExpect(jsonPath("$.content.[1].id", is(clientePaula.getId().toString())))
             .andExpect(jsonPath("$.content.[1].nome", is(clientePaula.getNome())))
             .andExpect(jsonPath("$.content.[1].email", is(clientePaula.getEmail())))
             .andExpect(jsonPath("$.content.[1].dataNascimento", is(clientePaula.getDataNascimento().format(
-                Util.BRAZIL_DATE_FORMAT))))
+                Util.DATE_FORMAT))))
             .andExpect(jsonPath("$.content.[1].idade", is((int) (getIdade(clientePaula.getDataNascimento())))))
             .andExpect(jsonPath("$.content.[1].dataInclusao").isNotEmpty());
     }
@@ -534,7 +534,7 @@ class ClientesApiApplicationTests {
             "alex.silva@gmail.com",
             LocalDate.of(1993, 12, 30));
 
-        mockMvc.perform(MockMvcRequestBuilders.get(URI_CLIENTES + "?data-nascimento=30/12/1993")
+        mockMvc.perform(MockMvcRequestBuilders.get(URI_CLIENTES + "?data-nascimento=1993-12-30")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.pageable.pageNumber", is(0)))
@@ -550,14 +550,14 @@ class ClientesApiApplicationTests {
             .andExpect(jsonPath("$.content.[0].nome", is(clienteSilva.getNome())))
             .andExpect(jsonPath("$.content.[0].email", is(clienteSilva.getEmail())))
             .andExpect(jsonPath("$.content.[0].dataNascimento", is(clienteSilva.getDataNascimento().format(
-                Util.BRAZIL_DATE_FORMAT))))
+                Util.DATE_FORMAT))))
             .andExpect(jsonPath("$.content.[0].idade", is((int) (getIdade(clienteSilva.getDataNascimento())))))
             .andExpect(jsonPath("$.content.[0].dataInclusao").isNotEmpty())
             .andExpect(jsonPath("$.content.[1].id", is(clientePaula.getId().toString())))
             .andExpect(jsonPath("$.content.[1].nome", is(clientePaula.getNome())))
             .andExpect(jsonPath("$.content.[1].email", is(clientePaula.getEmail())))
             .andExpect(jsonPath("$.content.[1].dataNascimento", is(clientePaula.getDataNascimento().format(
-                Util.BRAZIL_DATE_FORMAT))))
+                Util.DATE_FORMAT))))
             .andExpect(jsonPath("$.content.[1].idade", is((int) (getIdade(clientePaula.getDataNascimento())))))
             .andExpect(jsonPath("$.content.[1].dataInclusao").isNotEmpty());
     }
@@ -578,7 +578,7 @@ class ClientesApiApplicationTests {
             "alex.silva@gmail.com",
             LocalDate.of(1993, 12, 30));
 
-        mockMvc.perform(MockMvcRequestBuilders.get(URI_CLIENTES + "?nome=fernando&data-nascimento=30/12/1993")
+        mockMvc.perform(MockMvcRequestBuilders.get(URI_CLIENTES + "?nome=fernando&data-nascimento=1993-12-30")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.pageable.pageNumber", is(0)))
@@ -594,7 +594,7 @@ class ClientesApiApplicationTests {
             .andExpect(jsonPath("$.content.[0].nome", is(clientePaula.getNome())))
             .andExpect(jsonPath("$.content.[0].email", is(clientePaula.getEmail())))
             .andExpect(jsonPath("$.content.[0].dataNascimento", is(clientePaula.getDataNascimento().format(
-                Util.BRAZIL_DATE_FORMAT))))
+                Util.DATE_FORMAT))))
             .andExpect(jsonPath("$.content.[0].idade", is((int) (getIdade(clientePaula.getDataNascimento())))))
             .andExpect(jsonPath("$.content.[0].dataInclusao").isNotEmpty());
     }

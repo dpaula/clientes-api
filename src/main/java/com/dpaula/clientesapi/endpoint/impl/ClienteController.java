@@ -1,9 +1,9 @@
 package com.dpaula.clientesapi.endpoint.impl;
 
+import com.dpaula.clientesapi.dto.ClienteDTO;
 import com.dpaula.clientesapi.endpoint.IClienteController;
 import com.dpaula.clientesapi.entity.Cliente;
 import com.dpaula.clientesapi.service.ClienteService;
-import com.dpaula.clientesapi.vo.ClienteDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

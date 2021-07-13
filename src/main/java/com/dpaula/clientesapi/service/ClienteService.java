@@ -9,6 +9,9 @@ import com.dpaula.clientesapi.util.Util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,6 +29,7 @@ public class ClienteService {
 
     private final ClienteRepository repository;
 
+    @Cacheable(value = "cliente")
     public Page<Cliente> findAllByFilters(final String nome, final String email,
         final Integer idade,
         final LocalDate dataNascimento, final Pageable pageable) {
@@ -39,6 +43,8 @@ public class ClienteService {
         return repository.findAll(clienteSpec, pageable);
     }
 
+    @CachePut(value = "cliente", key = "#cliente.id")
+    @CacheEvict(value = "cliente", allEntries = true)
     public Cliente create(final Cliente cliente) {
         log.info("{} Criando novo cliente, email: {}", Util.LOG_PREFIX, cliente.getEmail());
 
@@ -55,6 +61,7 @@ public class ClienteService {
         }
     }
 
+    @CacheEvict(value = "cliente", allEntries = true)
     public Cliente alterar(final Cliente cliente) {
         log.info("{} Alterando cliente id: {}", Util.LOG_PREFIX, cliente.getId());
 
@@ -77,11 +84,13 @@ public class ClienteService {
             .orElseThrow(ObjectNotFoundException.with(Cliente.class, id, "id"));
     }
 
+    @Cacheable(value = "cliente", key = "#id")
     public Cliente buscar(final UUID id) {
         log.info("{} Buscando cliente id: {}", Util.LOG_PREFIX, id);
         return findClienteByIdOrThrow(id);
     }
 
+    @CacheEvict(value = "cliente", allEntries = true)
     public void delete(final UUID id) {
         log.info("{} Removendo cliente id: {}", Util.LOG_PREFIX, id);
 

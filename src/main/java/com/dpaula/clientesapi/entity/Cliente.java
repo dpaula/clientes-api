@@ -1,12 +1,13 @@
 package com.dpaula.clientesapi.entity;
 
+import com.dpaula.clientesapi.dto.ClienteDTO;
 import com.dpaula.clientesapi.util.Util;
-import com.dpaula.clientesapi.vo.ClienteDTO;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -23,8 +24,9 @@ import static java.time.temporal.ChronoUnit.YEARS;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "cli_clientes")
-public class Cliente {
+public class Cliente implements Serializable {
 
+    private static final long serialVersionUID = -1641264075569744503L;
     @Id
     @Type(type = "uuid-char")
     @GeneratedValue(generator = "uuid2")

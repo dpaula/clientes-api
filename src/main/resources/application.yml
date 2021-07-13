@@ -34,7 +34,9 @@ spring:
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
     url: jdbc:sqlserver://localhost;databaseName=master
     username: sa
-    password: deVportO20
+    password: dEv8_adlkj*
+  cache:
+    type: simple
 
 logging:
   pattern:
